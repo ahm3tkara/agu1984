@@ -1,0 +1,81 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Task {
+  createdAt   DateTime        @default(now())
+  description String?
+  dueDate     DateTime?
+  id          String          @id @default(cuid())
+  project     Project?        @relation(fields: [projectId], references: [id])
+  projectId   String?
+  status      EnumTaskStatus?
+  title       String?
+  updatedAt   DateTime        @updatedAt
+}
+
+model Customer {
+  createdAt DateTime  @default(now())
+  email     String?
+  id        String    @id @default(cuid())
+  invoices  Invoice[]
+  name      String?
+  phone     String?
+  projects  Project[]
+  updatedAt DateTime  @updatedAt
+}
+
+model Invoice {
+  amount     Float?
+  createdAt  DateTime           @default(now())
+  customer   Customer?          @relation(fields: [customerId], references: [id])
+  customerId String?
+  dueDate    DateTime?
+  id         String             @id @default(cuid())
+  issueDate  DateTime?
+  status     EnumInvoiceStatus?
+  updatedAt  DateTime           @updatedAt
+}
+
+model Project {
+  createdAt   DateTime           @default(now())
+  customer    Customer?          @relation(fields: [customerId], references: [id])
+  customerId  String?
+  description String?
+  endDate     DateTime?
+  id          String             @id @default(cuid())
+  name        String?
+  startDate   DateTime?
+  status      EnumProjectStatus?
+  tasks       Task[]
+  updatedAt   DateTime           @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+enum EnumTaskStatus {
+  Option1
+}
+
+enum EnumInvoiceStatus {
+  Option1
+}
+
+enum EnumProjectStatus {
+  Option1
+}
